@@ -14,7 +14,8 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x, 17.x, 18.x, 19.x, 20.x]
+        # node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x, 17.x, 18.x, 19.x, 20.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -33,16 +34,18 @@ jobs:
       #   run: npm run test
       #   env:
       #     CI: true
-      - name: Upload
-        run: node_modules/.bin/prebuild --upload -u ${{ secrets.GITHUB_TOKEN }}
-        env:
-          CI: true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: node-package-x64
+          path: |
+            prebuilds/*
 
   build-windows-x86:
     runs-on: windows-2019
     strategy:
       matrix:
-        node_version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x, 17.x, 18.x, 19.x, 20.x]
+        # node_version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x, 16.x, 17.x, 18.x, 19.x, 20.x]
+        node_version: [18.x]
         node_arch:
           - x86
     steps:
@@ -65,10 +68,11 @@ jobs:
       #   run: npm run test
       #   env:
       #     CI: true
-      - name: Upload
-        run: node_modules/.bin/prebuild --upload -u ${{ secrets.GITHUB_TOKEN }}
-        env:
-          CI: true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: node-package-x86
+          path: |
+            prebuilds/*
 
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
