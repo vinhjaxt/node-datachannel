@@ -1,10 +1,10 @@
 name: Build - Linux
 
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - v*
+  issues:
+    types: [opened, reopened, closed]
+  issue_comment:
+    types: [created, edited, deleted]
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
