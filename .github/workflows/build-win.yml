@@ -69,3 +69,10 @@ jobs:
         run: node_modules/.bin/prebuild --upload -u ${{ secrets.GITHUB_TOKEN }}
         env:
           CI: true
+
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
