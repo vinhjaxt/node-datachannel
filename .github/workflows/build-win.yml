@@ -37,7 +37,7 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "release_tag=${{ matrix.node-version }}_win_x64_%date%_%time%" >> $GITHUB_OUTPUT
+          echo release_tag=${{ matrix.node-version }}_win_x64_%date%_%time% >> $GITHUB_OUTPUT
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
