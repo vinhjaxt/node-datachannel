@@ -24,7 +24,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: Build_winx64_${{ steps.tag.outputs.release_tag }}_${{ github.ref_name }}
+          name: Build_winx64_${{ steps.tag.outputs.release_tag }}_${{ github.ref_name }}
           draft: false
           prerelease: false
           generate_release_notes: false
