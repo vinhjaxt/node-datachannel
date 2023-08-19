@@ -52,6 +52,8 @@ jobs:
         env:
           CI: true
       # Create release
+      - name: Rename file
+        run: Get-ChildItem -Recurse -File ./prebuilds/ | Rename-Item -NewName { "node-${{ matrix.node-version }}-"+$_.Name }
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
