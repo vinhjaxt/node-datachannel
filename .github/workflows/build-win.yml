@@ -10,7 +10,27 @@ env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate release tag
+        id: tag
+        run: |
+          sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+          sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+          echo "release_tag=ActionBuild_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: Build_winx64_${{ steps.tag.outputs.release_tag }}_${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+
   build-windows-x64:
+    needs: create_release
     runs-on: windows-2019
     strategy:
       matrix:
@@ -29,21 +49,12 @@ jobs:
         run: set npm_config_cache= && set NPM_CONFIG_CACHE= && npm install --build-from-source
         env:
           CI: true
-      # - name: Test
-      #   run: npm run test
-      #   env:
-      #     CI: true
       # Create release
-      - name: Generate release tag
-        id: tag
-        run: |
-          Write-Output "release_tag=${{ matrix.node-version }}_win_x64_$(Get-Date -Format "yyyy_MM_dd_H_m_s")" > $env:GITHUB_OUTPUT
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: |
-            prebuilds/*
+          tag_name: ${{ needs.create_release.outputs.tag-name }}
+          files: prebuilds/*
       # Done release
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
