@@ -32,6 +32,7 @@ jobs:
           generate_release_notes: false
 
   build-linux:
+    needs: create_release
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -49,7 +50,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -exec mv {} node-amd64-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir mv {} node-amd64-${{ matrix.node-version }}-{} \;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -57,6 +58,7 @@ jobs:
           files: prebuilds/*
       # Done release
   build-linux-armv7:
+    needs: create_release
     runs-on: ubuntu-20.04
 
     strategy:
@@ -85,7 +87,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -exec mv {} node-armv7-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir mv {} node-armv7-${{ matrix.node-version }}-{} \;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -94,6 +96,7 @@ jobs:
       # Done release
 
   build-linux-arm64:
+    needs: create_release
     runs-on: ubuntu-20.04
 
     strategy:
@@ -122,7 +125,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -exec mv {} node-arm64-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir mv {} node-arm64-${{ matrix.node-version }}-{} \;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
