@@ -58,7 +58,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run: find . -exec sh -c 'f="{}" ; echo mv "$f" "${f/.\//node-${{ matrix.node-version }}-}"' \;
+        run: find . -exec sh -c 'f="{}" ; mv "$f" "${f/.\//node-${{ matrix.node-version }}-}"' \;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
