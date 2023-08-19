@@ -50,7 +50,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -execdir mv {} node-amd64-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir rename 's/\.\//node-amd64-${{ matrix.node-version }}-/g' "{}"\;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -87,7 +87,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -execdir mv {} node-armv7-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir rename 's/\.\//node-amd64-${{ matrix.node-version }}-/g' "{}"\;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -125,7 +125,7 @@ jobs:
           CI: true
       # Create release
       - name: Rename file
-        run:  find ./prebuilds/ -type f -execdir mv {} node-arm64-${{ matrix.node-version }}-{} \;
+        run:  find ./prebuilds/ -type f -execdir rename 's/\.\//node-amd64-${{ matrix.node-version }}-/g' "{}"\;
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
