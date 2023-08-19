@@ -10,6 +10,27 @@ env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.tag.outputs.release_tag }}
+    steps:
+      - name: Generate release tag
+        id: tag
+        run: |
+          sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+          sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+          echo "release_tag=Build_winx64_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+
   build-linux:
     runs-on: ubuntu-20.04
     strategy:
@@ -26,15 +47,15 @@ jobs:
         run: npm install --build-from-source
         env:
           CI: true
-      - name: Test
-        run: npm run test
-        env:
-          CI: true
-      - name: Upload
-        run: node_modules/.bin/prebuild --upload -u ${{ secrets.GITHUB_TOKEN }}
-        env:
-          CI: true
-
+      # Create release
+      - name: Rename file
+        run:  find ./prebuilds/ -type f -exec mv {} node-amd64-${{ matrix.node-version }}-{} \;
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.create_release.outputs.release_tag }}
+          files: prebuilds/*
+      # Done release
   build-linux-armv7:
     runs-on: ubuntu-20.04
 
@@ -59,9 +80,18 @@ jobs:
       - name: Build & Upload
         run: |
           npm install --ignore-scripts
-          node_modules/.bin/prebuild --backend cmake-js --arch arm --upload -u ${{ secrets.GITHUB_TOKEN }} -- --CDCMAKE_TOOLCHAIN_FILE:FILEPATH=./cmake/toolchain/armv7.cmake
+          node_modules/.bin/prebuild --backend cmake-js --arch arm -- --CDCMAKE_TOOLCHAIN_FILE:FILEPATH=./cmake/toolchain/armv7.cmake
         env:
           CI: true
+      # Create release
+      - name: Rename file
+        run:  find ./prebuilds/ -type f -exec mv {} node-armv7-${{ matrix.node-version }}-{} \;
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.create_release.outputs.release_tag }}
+          files: prebuilds/*
+      # Done release
 
   build-linux-arm64:
     runs-on: ubuntu-20.04
@@ -87,9 +117,18 @@ jobs:
       - name: Build & Upload
         run: |
           npm install --ignore-scripts
-          node_modules/.bin/prebuild --backend cmake-js --arch arm64 --upload -u ${{ secrets.GITHUB_TOKEN }} -- --CDCMAKE_TOOLCHAIN_FILE:FILEPATH=./cmake/toolchain/arm64.cmake
+          node_modules/.bin/prebuild --backend cmake-js --arch arm64 -- --CDCMAKE_TOOLCHAIN_FILE:FILEPATH=./cmake/toolchain/arm64.cmake
         env:
           CI: true
+      # Create release
+      - name: Rename file
+        run:  find ./prebuilds/ -type f -exec mv {} node-arm64-${{ matrix.node-version }}-{} \;
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.create_release.outputs.release_tag }}
+          files: prebuilds/*
+      # Done release
 
   # npm-publish:
   #   needs: [build-linux, build-linux-armv7, build-linux-arm64]
