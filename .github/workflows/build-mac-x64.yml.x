@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo timedatectl set-timezone Asia/Ho_Chi_Minh
           sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-          echo "release_tag=Build_winx64_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+          echo "release_tag=Build_darwin_x64_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -56,6 +56,15 @@ jobs:
         run: node_modules/.bin/prebuild
         env:
           CI: true
+      # Create release
+      - name: Rename file
+        run: find . -exec sh -c 'f="{}" ; echo mv "$f" "${f/.\//node-${{ matrix.node-version }}-}"' \;
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.create_release.outputs.release_tag }}
+          files: prebuilds/*
+      # Done release
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
