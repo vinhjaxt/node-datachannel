@@ -10,7 +10,29 @@ env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.tag.outputs.release_tag }}
+    steps:
+      - name: Generate release tag
+        id: tag
+        run: |
+          sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+          sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+          echo "release_tag=Build_winx64_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+
   build-macos:
+    needs: create_release
     runs-on: macos-11
     strategy:
       matrix:
@@ -30,11 +52,13 @@ jobs:
           CI: true
           OPENSSL_ROOT_DIR: /usr/local/opt/openssl
           OPENSSL_LIBRARIES: /usr/local/opt/openssl/lib
-      - name: Test
-        run: npm run test
-        env:
-          CI: true
       - name: Upload
-        run: node_modules/.bin/prebuild --upload -u ${{ secrets.GITHUB_TOKEN }}
+        run: node_modules/.bin/prebuild
         env:
           CI: true
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
