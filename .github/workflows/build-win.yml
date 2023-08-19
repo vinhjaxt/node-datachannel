@@ -19,12 +19,12 @@ jobs:
         run: |
           sudo timedatectl set-timezone Asia/Ho_Chi_Minh
           sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-          echo "release_tag=ActionBuild_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+          echo "release_tag=Build_winx64_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          name: Build_winx64_${{ steps.tag.outputs.release_tag }}_${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.release_tag }}
           draft: false
           prerelease: false
           generate_release_notes: false
@@ -53,7 +53,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.create_release.outputs.tag-name }}
+          tag_name: ${{ needs.create_release.outputs.tag_name }}
           files: prebuilds/*
       # Done release
 
