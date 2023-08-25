@@ -36,7 +36,7 @@ include(FetchContent)
 # Fetch libdatachannel
 FetchContent_Declare(
     libdatachannel
-    GIT_REPOSITORY https://github.com/vinhjaxt/libdatachannel.git
+    GIT_REPOSITORY https://github.com/Luon-vn/libdatachannel.git
     GIT_TAG "master"
 )
 
