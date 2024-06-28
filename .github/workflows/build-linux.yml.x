@@ -1,10 +1,6 @@
 name: Build - Linux
 
-on:
-  issues:
-    types: [opened, reopened, closed]
-  issue_comment:
-    types: [created, edited, deleted]
+on: workflow_dispatch
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
